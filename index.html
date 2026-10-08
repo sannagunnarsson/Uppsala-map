@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Explore Uppsala — illustrated map</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body><main>
+<h1>Explore Uppsala</h1><p class="intro">A little guide to culture and student life. Select a place to discover more.</p>
+<label for="category">Show</label><select id="category"><option value="all">All places</option><option value="Museum">Museums</option><option value="Church">Churches</option><option value="Student nation">Student nations</option></select>
+<div class="layout"><div class="map">
+<img src="assets/uppsala-map.png" alt="Illustrated aerial map of Uppsala"><div id="pins" aria-label="Places on the map"></div></div>
+<aside id="info" aria-live="polite"><div class="category">Welcome</div><h2>Choose a place</h2><p>Click a labelled marker on the map to read about a museum, church or student nation.</p><p class="hint">You can also use Tab to select a marker and Enter to open it.</p></aside></div>
+<small>Prototype: the map is AI-illustrated and the markers are approximate. Check locations against a geographic map before publishing.</small>
+</main><script src="places.js"></script><script src="app.js"></script></body></html>

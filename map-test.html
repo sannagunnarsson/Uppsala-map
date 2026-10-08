@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Explore Uppsala</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/maplibre-gl@6.13.0/dist/maplibre-gl.css"
+  >
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f3e8;
+      color: #28483d;
+    }
+
+    header {
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+    }
+
+    #map {
+      width: 100%;
+      height: 75vh;
+      min-height: 400px;
+    }
+
+    #status {
+      padding: 0 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Explore Uppsala</h1>
+    <p>Click a marker to learn about a place.</p>
+  </header>
+
+  <div id="map"></div>
+  <p id="status" role="status">Loading map…</p>
+
+  <script type="module">
+    import * as maplibregl from
+      'https://unpkg.com/maplibre-gl@6.13.0/dist/maplibre-gl.mjs';
+
+    const status = document.getElementById('status');
+
+    // Coordinates use longitude first, then latitude.
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: 'https://tiles.openfreemap.org/styles/bright',
+      center: [17.634, 59.858],
+      zoom: 16,
+      pitch: 45,
+      bearing: 0,
+      canvasContextAttributes: {
+        antialias: true
+      }
+    });
+
+    map.addControl(
+      new maplibregl.NavigationControl(),
+      'top-right'
+    );
+
+    map.on('error', () => {
+      status.textContent =
+        'Some map resources could not load. Check your internet connection.';
+    });
+
+    map.on('load', () => {
+      // Add building data.
+      map.addSource('building-data', {
+        type: 'vector',
+        url: 'https://tiles.openfreemap.org/planet'
+      });
+
+      // Keep map labels above the buildings.
+      const labelLayer = map.getStyle().layers.find(layer =>
+        layer.type === 'symbol' &&
+        layer.layout?.['text-field']
+      );
+
+      map.addLayer({
+        id: 'uppsala-3d-buildings',
+        type: 'fill-extrusion',
+        source: 'building-data',
+        'source-layer': 'building',
+        minzoom: 15,
+        filter: ['!=', ['get', 'hide_3d'], true],
+
+        paint: {
+          'fill-extrusion-color': '#d9c6a5',
+
+          // Use supplied heights, or 8 metres as a fallback.
+          'fill-extrusion-height': [
+            'coalesce',
+            ['get', 'render_height'],
+            8
+          ],
+
+          'fill-extrusion-base': [
+            'coalesce',
+            ['get', 'render_min_height'],
+            0
+          ],
+
+          'fill-extrusion-opacity': 0.9
+        }
+      }, labelLayer?.id);
+
+      status.textContent =
+        'Map loaded. Zoom in to see buildings in 3D.';
+    });
+
+    // First example place. This marker position is approximate.
+    const card = document.createElement('div');
+
+    const title = document.createElement('h2');
+    title.textContent = 'Uppsala Cathedral';
+
+    const description = document.createElement('p');
+    description.textContent =
+      'Discover the cathedral and its cultural history.';
+
+    card.append(title, description);
+
+    new maplibregl.Marker({ color: '#28594c' })
+      .setLngLat([17.6333, 59.8581])
+      .setPopup(
+        new maplibregl.Popup().setDOMContent(card)
+      )
+      .addTo(map);
+  </script>
+</body>
+</html>

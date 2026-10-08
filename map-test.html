@@ -12,6 +12,10 @@
   >
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -27,38 +31,399 @@
       margin: 0 0 8px;
     }
 
+    header p {
+      line-height: 1.5;
+    }
+
+    select {
+      padding: 10px;
+      margin-left: 8px;
+      border: 1px solid #aab7aa;
+      border-radius: 8px;
+      background: white;
+      font: inherit;
+    }
+
     #map {
       width: 100%;
-      height: 75vh;
+      height: 70vh;
       min-height: 400px;
     }
 
     #status {
       padding: 0 20px;
+      font-size: 14px;
     }
+
+    .place-card {
+      max-width: 250px;
+      color: #28483d;
+      line-height: 1.5;
+    }
+
+    .place-card h2 {
+      margin: 8px 0;
+      font-size: 20px;
+    }
+
+    .place-card .category {
+      font-size: 12px;
+      color: #657568;
+    }
+
+    .place-card a {
+      color: #176252;
+    }
+
+    .maplibregl-popup-content {
+      padding: 18px;
+      border-radius: 12px;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      #map {
+        height: 65vh;
+      }
+    }
+
+    [hidden] {
+  display: none !important;
+}
+
+.home-screen {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: #f7f3e8;
+}
+
+.home-content {
+  max-width: 600px;
+  text-align: center;
+}
+
+.home-label {
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #657568;
+}
+
+.home-content h1 {
+  margin: 20px 0;
+  font-family: Georgia, serif;
+  font-size: clamp(44px, 8vw, 72px);
+  font-weight: normal;
+}
+
+.home-content p {
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.primary-button {
+  margin-top: 24px;
+  padding: 15px 28px;
+  border: none;
+  border-radius: 12px;
+  background: #28483d;
+  color: white;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background: #3d6555;
+}
+
+.back-button {
+  margin-bottom: 18px;
+  padding: 8px 0;
+  border: none;
+  background: transparent;
+  color: #28483d;
+  font: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 3px solid #b87823;
+  outline-offset: 4px;
+}
+
+#map-screen {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.map-toolbar {
+  position: absolute;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  left: calc(16px + env(safe-area-inset-left, 0px));
+  right: 60px;
+  z-index: 2;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  /* Empty space around the controls stays draggable. */
+  pointer-events: none;
+}
+
+.home-button,
+.category-control {
+  pointer-events: auto;
+  background: #fffdf7;
+  border: 1px solid #e0e4db;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px #203d3020;
+}
+
+.home-button {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #28483d;
+  cursor: pointer;
+}
+
+.home-button:hover {
+  background: #eaf0e5;
+}
+
+.category-control {
+  min-width: 0;
+}
+
+.category-control select {
+  width: 100%;
+  max-width: 210px;
+  height: 48px;
+  margin: 0;
+  padding: 0 12px;
+
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  color: #28483d;
+  font: inherit;
+  cursor: pointer;
+}
+
+.category-control select:focus-visible {
+  outline: 3px solid #b87823;
+  outline-offset: 2px;
+}
+
+#status.map-status {
+  position: absolute;
+  bottom: calc(38px + env(safe-area-inset-bottom, 0px));
+  left: 16px;
+  z-index: 2;
+
+  max-width: calc(100% - 32px);
+  margin: 0;
+  padding: 8px 12px;
+
+  border-radius: 10px;
+  background: #fffdf7ee;
+  color: #28483d;
+  font-size: 12px;
+  box-shadow: 0 2px 8px #203d3015;
+
+  pointer-events: none;
+}
+
+/* Accessible label without visible text. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .map-toolbar {
+    top: calc(12px + env(safe-area-inset-top, 0px));
+    left: 12px;
+    gap: 8px;
+  }
+
+  .category-control select {
+    font-size: 14px;
+  }
+}
+
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>Explore Uppsala</h1>
-    <p>Click a marker to learn about a place.</p>
-  </header>
+    <!-- Home screen -->
+    <section id="home-screen" class="home-screen">
+        <div class="home-content">
+        <div class="home-label">A guide for international students</div>
+    
+        <h1 id="home-title" tabindex="-1">Explore Uppsala</h1>
+    
+        <p>
+            Get to know your new city.
+            Discover museums, historic places and student nations
+            through an interactive map.
+        </p>
+    
+        <button
+            id="open-map"
+            class="primary-button"
+            type="button"
+        >
+            Explore the map →
+        </button>
+        </div>
+    </section>
+    
+    <!-- Map screen -->
+    <section id="map-screen" hidden>
+        <div id="map" aria-label="Map of Uppsala"></div>
 
-  <div id="map"></div>
-  <p id="status" role="status">Loading map…</p>
+  <div class="map-toolbar">
+    <button
+      id="back-home"
+      class="home-button"
+      type="button"
+      aria-label="Return to home"
+      title="Return to home"
+    >
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M3 10 12 3l9 7"/>
+        <path d="M5 9v12h14V9"/>
+        <path d="M9 21v-8h6v8"/>
+      </svg>
+    </button>
+
+    <div class="category-control">
+      <label for="category" class="sr-only">
+        Filter places by category
+      </label>
+
+      <select id="category">
+        <option value="all">All places</option>
+        <option value="Church">Churches</option>
+        <option value="Museum">Museums</option>
+        <option value="Student nation">Student nations</option>
+      </select>
+    </div>
+  </div>
+
+  <p id="status" class="map-status" role="status">
+    Loading map…
+  </p>
+    </section>
 
   <script type="module">
     import * as maplibregl from
       'https://unpkg.com/maplibre-gl@6.13.0/dist/maplibre-gl.mjs';
 
     const status = document.getElementById('status');
+    const categorySelect = document.getElementById('category');
 
-    // Coordinates use longitude first, then latitude.
+    // Coordinates: [longitude, latitude].
+    // Check these starter positions before publishing.
+    const places = [
+      {
+        name: 'Uppsala Cathedral',
+        category: 'Church',
+        coordinates: [17.6333, 59.8581],
+        description:
+          'Explore the cathedral and its place in Uppsala’s religious and cultural history.',
+        website:
+          'https://www.svenskakyrkan.se/uppsala/domkyrkan'
+      },
+      {
+        name: 'Gustavianum',
+        category: 'Museum',
+        coordinates: [17.6315, 59.8585],
+        description:
+          'Discover Uppsala University’s museum and collections connected to research, learning and history.',
+        website:
+          'https://www.uu.se/gustavianum'
+      },
+      {
+        name: 'Upplandsmuseet',
+        category: 'Museum',
+        coordinates: [17.6345, 59.8590],
+        description:
+          'Explore the history and cultural heritage of Uppsala and the surrounding region.',
+        website:
+          'https://www.upplandsmuseet.se/'
+      },
+      {
+        name: 'Södermanlands-Nerikes nation',
+        category: 'Student nation',
+        coordinates: [17.6300, 59.8597],
+        description:
+          'Discover one of Uppsala’s student nations. Student nations are associations that bring students together through activities, traditions and social life.',
+        website:
+          'https://www.snerikes.se/'
+      },
+      {
+        name: 'Stockholms nation',
+        category: 'Student nation',
+        coordinates: [17.6290, 59.8589],
+        description:
+          'Explore another of Uppsala’s student nations. Visit its website to learn about membership, events and student activities.',
+        website:
+          'https://www.stockholmsnation.se/'
+      }
+    ];
+
+    const categoryColors = {
+      Church: '#985a45',
+      Museum: '#426b8c',
+      'Student nation': '#427350'
+    };
+
     const map = new maplibregl.Map({
       container: 'map',
       style: 'https://tiles.openfreemap.org/styles/bright',
-      center: [17.634, 59.858],
+      center: [17.633, 59.8586],
       zoom: 16,
       pitch: 45,
       bearing: 0,
@@ -72,24 +437,125 @@
       'top-right'
     );
 
+    const homeScreen = document.getElementById('home-screen');
+const mapScreen = document.getElementById('map-screen');
+
+document.getElementById('open-map').addEventListener('click', () => {
+  homeScreen.hidden = true;
+  mapScreen.hidden = false;
+
+  requestAnimationFrame(() => {
+    map.resize();
+    document.getElementById('back-home').focus();
+  });
+
+  window.scrollTo(0, 0);
+});
+
+
+document.getElementById('back-home').addEventListener('click', () => {
+  mapScreen.hidden = true;
+  homeScreen.hidden = false;
+
+  document.getElementById('open-map').focus();
+  window.scrollTo(0, 0);
+});
+
     map.on('error', () => {
       status.textContent =
         'Some map resources could not load. Check your internet connection.';
     });
 
+    // Create information cards using textContent.
+    function createCard(place) {
+      const card = document.createElement('div');
+      card.className = 'place-card';
+
+      const category = document.createElement('div');
+      category.className = 'category';
+      category.textContent = place.category;
+
+      const title = document.createElement('h2');
+      title.textContent = place.name;
+
+      const description = document.createElement('p');
+      description.textContent = place.description;
+
+      const link = document.createElement('a');
+      link.href = place.website;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = 'Official website ↗';
+
+      card.append(category, title, description, link);
+
+      return card;
+    }
+
+    let markers = [];
+
+    // Replace the visible markers when the filter changes.
+    function showPlaces() {
+      markers.forEach(marker => {
+        marker.getPopup()?.remove();
+        marker.remove();
+      });
+
+      markers = [];
+
+      const selectedCategory = categorySelect.value;
+
+      const visiblePlaces = places.filter(place =>
+        selectedCategory === 'all' ||
+        place.category === selectedCategory
+      );
+
+      visiblePlaces.forEach(place => {
+        const popup = new maplibregl.Popup({
+          offset: 25,
+          maxWidth: '300px'
+        }).setDOMContent(createCard(place));
+
+        const marker = new maplibregl.Marker({
+          color: categoryColors[place.category]
+        })
+          .setLngLat(place.coordinates)
+          .setPopup(popup)
+          .addTo(map);
+
+        // Make the marker accessible by keyboard.
+        const element = marker.getElement();
+        element.setAttribute('role', 'button');
+        element.setAttribute('tabindex', '0');
+        element.setAttribute('aria-label', place.name);
+
+        element.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            marker.togglePopup();
+          }
+        });
+
+        markers.push(marker);
+      });
+
+      status.textContent =
+        `${visiblePlaces.length} places shown. Click a marker to learn more.`;
+    }
+
     map.on('load', () => {
-      // Add building data.
+      // Add geographic building contours.
       map.addSource('building-data', {
         type: 'vector',
         url: 'https://tiles.openfreemap.org/planet'
       });
 
-      // Keep map labels above the buildings.
       const labelLayer = map.getStyle().layers.find(layer =>
         layer.type === 'symbol' &&
         layer.layout?.['text-field']
       );
 
+      // Display simple 3D building volumes.
       map.addLayer({
         id: 'uppsala-3d-buildings',
         type: 'fill-extrusion',
@@ -101,7 +567,6 @@
         paint: {
           'fill-extrusion-color': '#d9c6a5',
 
-          // Use supplied heights, or 8 metres as a fallback.
           'fill-extrusion-height': [
             'coalesce',
             ['get', 'render_height'],
@@ -118,28 +583,9 @@
         }
       }, labelLayer?.id);
 
-      status.textContent =
-        'Map loaded. Zoom in to see buildings in 3D.';
+      showPlaces();
+      categorySelect.addEventListener('change', showPlaces);
     });
-
-    // First example place. This marker position is approximate.
-    const card = document.createElement('div');
-
-    const title = document.createElement('h2');
-    title.textContent = 'Uppsala Cathedral';
-
-    const description = document.createElement('p');
-    description.textContent =
-      'Discover the cathedral and its cultural history.';
-
-    card.append(title, description);
-
-    new maplibregl.Marker({ color: '#28594c' })
-      .setLngLat([17.6333, 59.8581])
-      .setPopup(
-        new maplibregl.Popup().setDOMContent(card)
-      )
-      .addTo(map);
   </script>
 </body>
 </html>
